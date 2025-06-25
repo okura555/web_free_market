@@ -16,26 +16,39 @@
             margin: 20px auto;
             max-width: 800px;
         }
+
+        .time-display {
+            font-size: 24px;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }        
     </style>
 </head>
 <body>
+    <div class="time-display" id="timeDisplay"></div>
     <h1>時刻を使うから同期できる、古いのは消えて新しく増えていく</h1>
     <canvas id="myChart"></canvas>
+    <div id="minValue"></div>
 
     <script>
+
+        let buy_price = 100;
         // グラフの初期化
         const ctx = document.getElementById('myChart').getContext('2d');
-        const moneyList = [0, 1, 2, 3, 11, 5, 6, 7, 8, 9];
-
-
-
-
+        const moneyList = [0, 1, 2, 3, 11, 5, -30, 7, 8, 9];
         let lastSecond = -1; // 最後に更新した秒を記録
+        let alertShown = false; // アラートが一度表示されたかを記録するフラグ
 
         let labels = ['開始'];
         // 初期データは現在の秒数から計算
         const initialSeconds = new Date().getSeconds();
+
+
         const initialIndex = initialSeconds % 10;
+        console.log(initialIndex);  
+
         let data = [moneyList[initialIndex]];
         console.log(data);
         // data = data +1000;
@@ -66,11 +79,35 @@
             const now = new Date();
             const currentSecond = now.getSeconds();
 
+            // 時、分、秒を取得（0埋めして2桁に）
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            // 時刻を表示
+            document.getElementById('timeDisplay').textContent = 
+                `現在時刻: ${hours}:${minutes}:${seconds}`;
+
+
+            const hours_m = now.getHours();
+            const minutes_m = now.getMinutes();
+            const seconds_m = now.getSeconds(); 
+            // 時間を秒に変換listは何秒に一回変えるかか、最大86400，割る5で17280
+            const gurahu_int = hours_m * 60 *60+ minutes_m *60+ seconds_m *1;
+            console.log(gurahu_int);
+
+
+
+
             if (currentSecond !== lastSecond) {
                 lastSecond = currentSecond;
 
                 // 秒数を10で割った余りをインデックスとして使用
                 const dataIndex = currentSecond % 10;
+
+                console.log(dataIndex);
+
+
+
                 let value = moneyList[dataIndex];
                 console.log(value);
                 console.log(dataIndex);
@@ -79,22 +116,38 @@
                 if (data.length > 5) {
                     data.shift();
                     labels.shift();
+
+                    if (!alertShown) {
+                        // alert("合言葉で10%オフ!!!!!");
+                        alertShown = true; // フラグをtrueにして、次回以降は表示しない
+                    }
                 }
 
-
                 //値段の設定
+                buy_price = value + buy_price;
+                console.log(buy_price);
                 // value = value + 1000;
                 labels.push(now.toLocaleTimeString());
-                data.push(value + 1);    //グラフに反映される値を増やしてるpush
-                
+                // data.push(value + buy_price);    //グラフに反映される値を増やしてるpush
+                data.push(buy_price);    //グラフに反映される値を増やしてるpush
 
                 
                 // グラフを更新
                 myChart.data.labels = labels;
                 myChart.data.datasets[0].data = data;
                 myChart.update();
+
+                // ★ここで最小値を表示
+                const minValue = Math.min(...data);
+                document.getElementById('minValue').textContent = `現在の最安値: ${minValue}`;
             }
-        }, 2000); // 200ミリ秒ごとに秒の変更をチェック
+        }, 
+        
+        
+        1000); // 200ミリ秒ごとに秒の変更をチェック
+        setInterval(updateDisplay);
+        updateDisplay();
+
     </script>
 </body>
 </html>
