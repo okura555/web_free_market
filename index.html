@@ -26,10 +26,13 @@
         // グラフの初期化
         const ctx = document.getElementById('myChart').getContext('2d');
         const moneyList = [0, 1, 2, 3, 11, 5, 6, 7, 8, 9];
-        let dataIndex = 0;
+        let lastSecond = -1; // 最後に更新した秒を記録
+
         let labels = ['開始'];
-        let data = [moneyList[0]];
-        let prevSec = (new Date()).getSeconds();
+        // 初期データは現在の秒数から計算
+        const initialSeconds = new Date().getSeconds();
+        const initialIndex = initialSeconds % 10;
+        let data = [moneyList[initialIndex]];
 
         const myChart = new Chart(ctx, {
             type: 'line',
@@ -52,28 +55,35 @@
             }
         });
 
-        // 秒が変わったらグラフを更新
+        // 秒数が変わるごとに更新
         setInterval(() => {
             const now = new Date();
-            const currentSec = now.getSeconds();
-            if (currentSec !== prevSec) {
-                prevSec = currentSec;
-                dataIndex++;
-                if (dataIndex >= moneyList.length) {
-                    dataIndex = 0;
-                }
-                const timeLabel = now.toLocaleTimeString(); // 例: 12:34:56
-                labels.push(timeLabel);
-                data.push(moneyList[dataIndex]);
+            const currentSecond = now.getSeconds();
+
+            if (currentSecond !== lastSecond) {
+                lastSecond = currentSecond;
+
+                // 秒数を10で割った余りをインデックスとして使用
+                const dataIndex = currentSecond % 10;
+                const value = moneyList[dataIndex];
+                console.log(value);
+                console.log(dataIndex);
+                
+                labels.push(now.toLocaleTimeString());
+                data.push(value);
+                
+                // データを最新の500点に制限
                 if (data.length > 500) {
                     data.shift();
                     labels.shift();
                 }
+                
+                // グラフを更新
                 myChart.data.labels = labels;
                 myChart.data.datasets[0].data = data;
                 myChart.update();
             }
-        }, 100); // 0.1秒ごとにチェック
+        }, 200); // 200ミリ秒ごとに秒の変更をチェック
     </script>
 </body>
 </html>
