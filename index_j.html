@@ -25,9 +25,11 @@
     <script>
         // グラフの初期化
         const ctx = document.getElementById('myChart').getContext('2d');
-        let value = 0;
+        const moneyList = [0, 1, 2, 3, 11, 5, 6, 7, 8, 9];
+        let dataIndex = 0;
         let labels = ['開始'];
-        let data = [0];
+        let data = [moneyList[0]];
+        let prevSec = (new Date()).getSeconds();
 
         const myChart = new Chart(ctx, {
             type: 'line',
@@ -50,23 +52,28 @@
             }
         });
 
-        // 1分ごとに値を更新
+        // 秒が変わったらグラフを更新
         setInterval(() => {
-            value++;
-            labels.push(`${value}分`);
-            data.push(value);
-            
-            // データを最新の5点に制限
-            if (data.length > 5) {
-                data.shift();
-                labels.shift();
+            const now = new Date();
+            const currentSec = now.getSeconds();
+            if (currentSec !== prevSec) {
+                prevSec = currentSec;
+                dataIndex++;
+                if (dataIndex >= moneyList.length) {
+                    dataIndex = 0;
+                }
+                const timeLabel = now.toLocaleTimeString(); // 例: 12:34:56
+                labels.push(timeLabel);
+                data.push(moneyList[dataIndex]);
+                if (data.length > 500) {
+                    data.shift();
+                    labels.shift();
+                }
+                myChart.data.labels = labels;
+                myChart.data.datasets[0].data = data;
+                myChart.update();
             }
-            
-            // グラフを更新
-            myChart.data.labels = labels;
-            myChart.data.datasets[0].data = data;
-            myChart.update();
-        }, 600);
+        }, 100); // 0.1秒ごとにチェック
     </script>
 </body>
 </html>
