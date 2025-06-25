@@ -26,6 +26,10 @@
         // グラフの初期化
         const ctx = document.getElementById('myChart').getContext('2d');
         const moneyList = [0, 1, 2, 3, 11, 5, 6, 7, 8, 9];
+
+
+
+
         let lastSecond = -1; // 最後に更新した秒を記録
 
         let labels = ['開始'];
@@ -33,6 +37,8 @@
         const initialSeconds = new Date().getSeconds();
         const initialIndex = initialSeconds % 10;
         let data = [moneyList[initialIndex]];
+        console.log(data);
+        // data = data +1000;
 
         const myChart = new Chart(ctx, {
             type: 'line',
@@ -65,7 +71,7 @@
 
                 // 秒数を10で割った余りをインデックスとして使用
                 const dataIndex = currentSecond % 10;
-                const value = moneyList[dataIndex];
+                let value = moneyList[dataIndex];
                 console.log(value);
                 console.log(dataIndex);
 
@@ -75,8 +81,11 @@
                     labels.shift();
                 }
 
+
+                //値段の設定
+                // value = value + 1000;
                 labels.push(now.toLocaleTimeString());
-                data.push(value );    //グラフに反映される値を増やしてるpush
+                data.push(value + 1);    //グラフに反映される値を増やしてるpush
                 
 
                 
@@ -85,7 +94,7 @@
                 myChart.data.datasets[0].data = data;
                 myChart.update();
             }
-        }, 200); // 200ミリ秒ごとに秒の変更をチェック
+        }, 2000); // 200ミリ秒ごとに秒の変更をチェック
     </script>
 </body>
 </html>
