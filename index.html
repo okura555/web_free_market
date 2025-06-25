@@ -19,7 +19,7 @@
     </style>
 </head>
 <body>
-    <h1>自動更新グラフ</h1>
+    <h1>時刻を使うから同期できる、古いのは消えて新しく増えていく</h1>
     <canvas id="myChart"></canvas>
 
     <script>
@@ -68,15 +68,17 @@
                 const value = moneyList[dataIndex];
                 console.log(value);
                 console.log(dataIndex);
-                
-                labels.push(now.toLocaleTimeString());
-                data.push(value);
-                
-                // データを最新の500点に制限
-                if (data.length > 500) {
+
+                                // データを最新の500点に制限
+                if (data.length > 5) {
                     data.shift();
                     labels.shift();
                 }
+
+                labels.push(now.toLocaleTimeString());
+                data.push(value );    //グラフに反映される値を増やしてるpush
+                
+
                 
                 // グラフを更新
                 myChart.data.labels = labels;
